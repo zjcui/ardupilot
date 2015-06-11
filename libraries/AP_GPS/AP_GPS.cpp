@@ -330,9 +330,12 @@ AP_GPS::update_instance(uint8_t instance)
 void
 AP_GPS::update(void)
 {
+    //Edited by Zhengjie
+#if GPS_PROTOCOL != GPS_VICON
     for (uint8_t i=0; i<GPS_MAX_INSTANCES; i++) {
         update_instance(i);
     }
+#endif
 
 #if GPS_MAX_INSTANCES > 1
     // work out which GPS is the primary, and how many sensors we have

@@ -799,6 +799,7 @@ static const AP_Scheduler::Task scheduler_tasks[] PROGMEM = {
     { gcs_send_heartbeat,  400,    150 },
     { gcs_send_deferred,     8,    720 },
     { gcs_data_stream_send,  8,    950 },
+    // { gcs_data_stream_send,  2,    950 },
 #if COPTER_LEDS == ENABLED
     { update_copter_leds,   40,      5 },
 #endif
@@ -843,6 +844,10 @@ static const AP_Scheduler::Task scheduler_tasks[] PROGMEM = {
   1000 = 0.1hz
  */
 static const AP_Scheduler::Task scheduler_tasks[] PROGMEM = {
+    // Edited by Zhengjie
+    // { gcs_check_input,       2,     550 },
+    // { gcs_data_stream_send,  2,     950 },
+
     { rc_loop,               1,     100 },
     { throttle_loop,         2,     450 },
     { update_GPS,            2,     900 },
@@ -856,6 +861,10 @@ static const AP_Scheduler::Task scheduler_tasks[] PROGMEM = {
     { three_hz_loop,        33,      90 },
     { compass_accumulate,    2,     420 },
     { barometer_accumulate,  2,     250 },
+
+    // Edited by Zhengjie
+    // { rc_loop,               0,     100 },
+
 #if FRAME_CONFIG == HELI_FRAME
     { check_dynamic_flight,  2,     100 },
 #endif
@@ -863,10 +872,12 @@ static const AP_Scheduler::Task scheduler_tasks[] PROGMEM = {
     { one_hz_loop,         100,     420 },
     { ekf_dcm_check,        10,      20 },
     { crash_check,          10,      20 },
+
     { gcs_check_input,	     2,     550 },
     { gcs_send_heartbeat,  100,     150 },
     { gcs_send_deferred,     2,     720 },
     { gcs_data_stream_send,  2,     950 },
+
     { update_mount,          2,     450 },
     { ten_hz_logging_loop,  10,     300 },
     { fifty_hz_logging_loop, 2,     220 },
@@ -892,7 +903,6 @@ static const AP_Scheduler::Task scheduler_tasks[] PROGMEM = {
 #endif
 };
 #endif
-
 
 void setup() 
 {
@@ -1232,8 +1242,9 @@ static void update_GPS(void)
     bool report_gps_glitch;
     bool gps_updated = false;
 
+    // Edited by Zhengjie
     gps.update();
-
+    
     // logging and glitch protection run after every gps message
     for (uint8_t i=0; i<gps.num_sensors(); i++) {
         if (gps.last_message_time_ms(i) != last_gps_reading[i]) {

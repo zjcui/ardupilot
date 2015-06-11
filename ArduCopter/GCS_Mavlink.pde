@@ -1432,7 +1432,34 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
     }  
 #endif // AC_RALLY == ENABLED
 
+// Edited by Zhengjie **********************************************************************************
+#if GPS_PROTOCOL == GPS_VICON
+    case MAVLINK_MSG_ID_GPS_RAW_INT:
 
+        mavlink_gps_raw_int_t packet;
+
+        mavlink_msg_gps_raw_int_decode(msg, &packet);
+
+        // set gps hil sensor
+        Location loc;
+        loc.lat = packet.lat;
+        loc.lng = packet.lon;
+        loc.alt = packet.alt;
+        // loc.alt = packet.alt/10;
+
+        // hardcode gps data to current location
+        // current_loc = loc;
+        
+        // current velocity ???
+        Vector3f vel(0, 0, 0);
+        vel *= 0.01f;
+
+        gps.setHIL(0, AP_GPS::GPS_OK_FIX_3D,
+                   packet.time_usec/1000,
+                   loc, vel, 10, 0, true);
+
+    break;
+#endif
     }     // end switch
 } // end handle mavlink
 
@@ -1493,7 +1520,12 @@ static void gcs_data_stream_send(void)
         if (gcs[i].initialised) {
             gcs[i].data_stream_send();
         }
+
     }
+
+    // Edited By Zhengjie ************************************************************
+    // gcs_send_message(MSG_GPS_RAW);
+    // gcs_send_message(MSG_ATTITUDE);
 }
 
 /*
