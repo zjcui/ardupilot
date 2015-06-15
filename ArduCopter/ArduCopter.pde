@@ -850,7 +850,11 @@ static const AP_Scheduler::Task scheduler_tasks[] PROGMEM = {
 
     { rc_loop,               1,     100 },
     { throttle_loop,         2,     450 },
-    { update_GPS,            2,     900 },
+
+    // Edited by Zhengjie
+    // { update_GPS,            2,     900 },
+    { update_GPS,            1,     500 },
+
     { update_batt_compass,  10,     720 },
     { read_aux_switches,    10,      50 },
     { arm_motors_check,     10,      10 },
@@ -873,7 +877,10 @@ static const AP_Scheduler::Task scheduler_tasks[] PROGMEM = {
     { ekf_dcm_check,        10,      20 },
     { crash_check,          10,      20 },
 
-    { gcs_check_input,	     2,     550 },
+    // Edited by Zhengjie
+    // { gcs_check_input,	     2,     550 },
+    { gcs_check_input,       1,     550 },
+
     { gcs_send_heartbeat,  100,     150 },
     { gcs_send_deferred,     2,     720 },
     { gcs_data_stream_send,  2,     950 },

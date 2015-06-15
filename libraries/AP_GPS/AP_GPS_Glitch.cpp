@@ -81,6 +81,12 @@ void GPS_Glitch::check_position()
         return;
     }
 
+//     //Edited by Zhengjie
+// #if GPS_PROTOCOL == GPS_VICON
+//     _flags.glitching = false;
+//     return; 
+// #endif
+
     // calculate time since last sane gps reading in ms
     sane_dt = (now - _last_good_update) / 1000.0f;
 

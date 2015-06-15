@@ -203,6 +203,13 @@ void AP_InertialNav::correct_with_gps(uint32_t now, int32_t lon, int32_t lat)
             _position_error.y = y - (hist_position_base_y + _position_correction.y);
         }
     }
+    
+//     //Edited by Zhengjie
+// #if GPS_PROTOCOL == GPS_VICON
+//     set_position_xy(x,y);
+//     _position_error.x = 0.0f;
+//     _position_error.y = 0.0f; 
+// #endif
 
     // update our internal record of glitching flag so that we can notice a change
     _flags.gps_glitching = _glitch_detector.glitching();
