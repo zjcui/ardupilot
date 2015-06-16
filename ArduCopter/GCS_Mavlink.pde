@@ -869,6 +869,59 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
 
     switch (msg->msgid) {
 
+// Edited by Zhengjie **********************************************************************************
+#if GPS_PROTOCOL == GPS_VICON
+    // case MAVLINK_MSG_ID_GPS_RAW_INT:
+
+    //     mavlink_gps_raw_int_t packet;
+
+    //     mavlink_msg_gps_raw_int_decode(msg, &packet);
+
+    //     // set gps hil sensor
+    //     Location loc;
+    //     loc.lat = packet.lat;
+    //     loc.lng = packet.lon;
+    //     loc.alt = packet.alt/10;
+    //     // loc.alt = packet.alt;
+
+    //     // hardcode gps data to current location
+    //     // current_loc = loc;
+        
+    //     // current velocity ???
+    //     Vector3f vel(float(packet.vel)/100*cos(float(packet.cog)/100), float(packet.vel)/100*sin(float(packet.cog)/100), 0);
+    //     // vel *= 0.01f;
+
+    //     gps.setHIL(0, AP_GPS::GPS_OK_FIX_3D,
+    //                packet.time_usec/1000,
+    //                loc, vel, 10, 0, true);
+
+    // break;
+
+    case MAVLINK_MSG_ID_HIL_GPS:
+    {
+        mavlink_hil_gps_t packet;
+
+        mavlink_msg_hil_gps_decode(msg, &packet);
+
+        // set gps hil sensor
+        Location loc;
+        loc.lat = packet.lat;
+        loc.lng = packet.lon;
+        loc.alt = packet.alt/10;
+
+        // current velocity ned???
+        Vector3f vel(packet.vn, packet.ve, packet.vd);
+        vel *= 0.01f;
+
+        gps.setHIL(0, AP_GPS::GPS_OK_FIX_3D,
+                   packet.time_usec/1000,
+                   loc, vel, 10, 0, true); 
+
+        break; 
+    }
+
+#endif // GPS_PROTOCOL == GPS_VICON
+
     case MAVLINK_MSG_ID_HEARTBEAT:      // MAV ID: 0
     {
         // We keep track of the last time we received a heartbeat from our GCS for failsafe purposes
@@ -1432,57 +1485,6 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
     }  
 #endif // AC_RALLY == ENABLED
 
-// Edited by Zhengjie **********************************************************************************
-#if GPS_PROTOCOL == GPS_VICON
-    // case MAVLINK_MSG_ID_GPS_RAW_INT:
-
-    //     mavlink_gps_raw_int_t packet;
-
-    //     mavlink_msg_gps_raw_int_decode(msg, &packet);
-
-    //     // set gps hil sensor
-    //     Location loc;
-    //     loc.lat = packet.lat;
-    //     loc.lng = packet.lon;
-    //     loc.alt = packet.alt/10;
-    //     // loc.alt = packet.alt;
-
-    //     // hardcode gps data to current location
-    //     // current_loc = loc;
-        
-    //     // current velocity ???
-    //     Vector3f vel(float(packet.vel)/100*cos(float(packet.cog)/100), float(packet.vel)/100*sin(float(packet.cog)/100), 0);
-    //     // vel *= 0.01f;
-
-    //     gps.setHIL(0, AP_GPS::GPS_OK_FIX_3D,
-    //                packet.time_usec/1000,
-    //                loc, vel, 10, 0, true);
-
-    // break;
-
-    case MAVLINK_MSG_ID_HIL_GPS:
-
-    mavlink_hil_gps_t packet;
-
-    mavlink_msg_hil_gps_decode(msg, &packet);
-
-    // set gps hil sensor
-    Location loc;
-    loc.lat = packet.lat;
-    loc.lng = packet.lon;
-    loc.alt = packet.alt/10;
-
-    // current velocity ned???
-    Vector3f vel(packet.vn, packet.ve, packet.vd);
-    vel *= 0.01f;
-
-    gps.setHIL(0, AP_GPS::GPS_OK_FIX_3D,
-               packet.time_usec/1000,
-               loc, vel, 10, 0, true); 
-
-    break; 
-
-#endif
     }     // end switch
 } // end handle mavlink
 
@@ -1501,12 +1503,18 @@ static void mavlink_delay_cb()
     in_mavlink_delay = true;
 
     uint32_t tnow = millis();
-    if (tnow - last_1hz > 1000) {
+
+    //Edited by Zhengjie
+    // if (tnow - last_1hz > 1000) {
+    if (tnow - last_1hz > 100) {
         last_1hz = tnow;
         gcs_send_heartbeat();
         gcs_send_message(MSG_EXTENDED_STATUS1);
     }
-    if (tnow - last_50hz > 20) {
+
+    //Edited by Zhengjie
+    // if (tnow - last_50hz > 20) {
+    if (tnow - last_50hz > 20) {    
         last_50hz = tnow;
         gcs_check_input();
         gcs_data_stream_send();

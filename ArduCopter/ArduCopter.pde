@@ -853,7 +853,7 @@ static const AP_Scheduler::Task scheduler_tasks[] PROGMEM = {
 
     // Edited by Zhengjie
     // { update_GPS,            2,     900 },
-    { update_GPS,            1,     500 },
+    { update_GPS,            2,     900 },
 
     { update_batt_compass,  10,     720 },
     { read_aux_switches,    10,      50 },
@@ -879,9 +879,12 @@ static const AP_Scheduler::Task scheduler_tasks[] PROGMEM = {
 
     // Edited by Zhengjie
     // { gcs_check_input,	     2,     550 },
-    { gcs_check_input,       1,     550 },
+    { gcs_check_input,       2,     550 },
 
-    { gcs_send_heartbeat,  100,     150 },
+    // Edited by Zhengjie
+    // { gcs_send_heartbeat,  100,     150 },
+    { gcs_send_heartbeat,  20,     150 },
+
     { gcs_send_deferred,     2,     720 },
     { gcs_data_stream_send,  2,     950 },
 
@@ -1250,6 +1253,7 @@ static void update_GPS(void)
     bool gps_updated = false;
 
     // Edited by Zhengjie
+    gcs_check_input();
     gps.update();
     
     // logging and glitch protection run after every gps message
@@ -1397,6 +1401,11 @@ static void read_AHRS(void)
 {
     // Perform IMU calculations and get attitude info
     //-----------------------------------------------
+// Edited by Zhengjie 
+#if GPS_PROTOCOL == GPS_VICON
+    gcs_check_input();
+#endif
+
 #if HIL_MODE != HIL_MODE_DISABLED
     // update hil before ahrs update
     gcs_check_input();
